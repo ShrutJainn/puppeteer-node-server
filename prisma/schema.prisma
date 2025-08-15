@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model environment_model {
+  id          String  @id @db.Uuid
+  environment String?
+  workflow_id String? @db.Uuid
+}
+
+model execution_phase {
+  id                    String    @id @db.Uuid
+  completed_at          DateTime? @db.Timestamp(6)
+  credits_cost          Int
+  inputs                String?   @db.VarChar(255)
+  name                  String?   @db.VarChar(255)
+  node                  String?
+  number                Int
+  outputs               String?   @db.VarChar(255)
+  started_at            DateTime? @db.Timestamp(6)
+  status                String?   @db.VarChar(255)
+  user_id               String?   @db.VarChar(255)
+  workflow_execution_id String?   @db.Uuid
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model workflow {
+  id              String    @id @db.Uuid
+  created_at      DateTime  @db.Timestamp(6)
+  definition      String?
+  description     String?   @db.VarChar(255)
+  name            String?   @db.VarChar(255)
+  status          String?   @db.VarChar(255)
+  updated_at      DateTime  @db.Timestamp(6)
+  user_id         String?   @db.VarChar(255)
+  last_run_at     DateTime? @db.Timestamp(6)
+  last_run_id     String?   @db.VarChar(255)
+  last_run_status String?   @db.VarChar(255)
+
+  @@unique([user_id, name], map: "ukmc56a6swbn8jcwoivclwweban")
+}
+
+model workflow_execution {
+  id               String    @id @db.Uuid
+  completed_at     DateTime? @db.Timestamp(6)
+  created_at       DateTime  @db.Timestamp(6)
+  started_at       DateTime? @db.Timestamp(6)
+  status           String?   @db.VarChar(255)
+  trigger          String?   @db.VarChar(255)
+  user_id          String?   @db.VarChar(255)
+  workflow_id      String?   @db.Uuid
+  credits_consumed Int?
+}
