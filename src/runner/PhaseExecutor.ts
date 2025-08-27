@@ -42,6 +42,10 @@ export class PhaseExecutor {
       phase.outputs = output;
     }
 
+    for (const [phaseId, phase] of Object.entries(environment.phases)) {
+      if (phase.type === "LAUNCH_BROWSER") phase.outputs = "Browser";
+    }
+
     return environment;
   }
 }
