@@ -15,7 +15,6 @@ app.post(
   "/execute/:workflowId",
   async (req: Request, res: Response): Promise<any> => {
     const { workflowId } = req.params;
-    console.log("hi there");
     try {
       const environment = await redisClient.get(`env:${workflowId}`);
       if (!environment) {

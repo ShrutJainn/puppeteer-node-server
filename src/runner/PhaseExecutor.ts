@@ -82,7 +82,7 @@ export class PhaseExecutor {
         const friendlyMessage =
           phase.type === "LAUNCH_BROWSER" &&
           err?.message?.includes("Cannot navigate")
-            ? "Invalid URL provided. The browser can't navigate to" +
+            ? "Invalid URL provided. The browser can't navigate to " +
               phase.inputs["Website Url"]
             : err?.message || "Phase execution failed";
 
@@ -90,6 +90,10 @@ export class PhaseExecutor {
 
         throw new Error(friendlyMessage);
       }
+    }
+
+    for (const [phaseId, phase] of Object.entries(environment.phases)) {
+      if (phase.type === "LAUNCH_BROWSER") phase.outputs = "Browser";
     }
 
     return environment;

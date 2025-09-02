@@ -20,7 +20,7 @@ export class LaunchBrowser {
     } catch (err: any) {
       await browser.close();
       throw new Error(
-        "Invalid URL provided. The browser can't navigate to" + url
+        "Invalid URL provided. The browser can't navigate to " + url
       );
     }
     return page;
