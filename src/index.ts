@@ -15,7 +15,7 @@ app.post(
   "/execute/:workflowId",
   async (req: Request, res: Response): Promise<any> => {
     const { workflowId } = req.params;
-
+    console.log("hi there");
     try {
       const environment = await redisClient.get(`env:${workflowId}`);
       if (!environment) {
@@ -36,7 +36,6 @@ app.post(
       }
 
       const result = await PhaseExecutor.run(parsedEnv);
-      console.log("result : ", result);
       await redisClient.set(
         `env:${workflowId}`,
         JSON.stringify(JSON.stringify(result))
