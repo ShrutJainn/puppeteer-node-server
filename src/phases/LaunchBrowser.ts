@@ -12,7 +12,10 @@ import puppeteer, { Browser, Page } from "puppeteer";
 
 export class LaunchBrowser {
   static async execute(inputs: Record<string, any>): Promise<Page> {
-    const url = inputs["Website Url"];
+    const inputUrl = inputs["Website Url"];
+    const url = inputUrl.startsWith("https://")
+      ? inputUrl
+      : "https://" + inputUrl;
     const browser: Browser = await puppeteer.launch({ headless: true });
     const page: Page = await browser.newPage();
     try {
