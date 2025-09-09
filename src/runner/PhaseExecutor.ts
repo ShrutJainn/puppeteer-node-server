@@ -2,55 +2,25 @@ import { LaunchBrowser } from "../phases/LaunchBrowser";
 import { PageToHtml } from "../phases/PageToHtml";
 import { ExtractTextFromElement } from "../phases/ExtractTextFromElement";
 import { Environment } from "../types/Environment";
+import { FillInput } from "../phases/FillInput";
+import { ClickElement } from "../phases/ClickElement";
 
 export class PhaseExecutor {
+  // private static async resolveRef(env: Environment, ref: string) {
+  //   const refId = ref.replace("$ref:", "");
+  //   return env.phases[refId]?.outputs;
+  // }
   private static async resolveRef(env: Environment, ref: string) {
     const refId = ref.replace("$ref:", "");
-    return env.phases[refId]?.outputs;
+    const output = env.phases[refId]?.outputs;
+    if (output === undefined) {
+      throw new Error(`Unresolved reference: ${ref} (no outputs found)`);
+    }
+    return output;
   }
 
-  // static async run(environment: Environment): Promise<Environment> {
-  //   for (const [phaseId, phase] of Object.entries(environment.phases)) {
-  //     const resolvedInputs: Record<string, any> = {};
-
-  //     const inputs = phase.inputs ?? {};
-
-  //     // Resolve all inputs (handling $ref)
-  //     for (const [key, value] of Object.entries(inputs)) {
-  //       resolvedInputs[key] =
-  //         typeof value === "string" && value.startsWith("$ref:")
-  //           ? await this.resolveRef(environment, value)
-  //           : value;
-  //     }
-
-  //     let output: any;
-
-  //     switch (phase.type) {
-  //       case "LAUNCH_BROWSER":
-  //         output = await LaunchBrowser.execute(resolvedInputs);
-  //         break;
-  //       case "PAGE_TO_HTML":
-  //         output = await PageToHtml.execute(resolvedInputs);
-  //         break;
-  //       case "EXTRACT_TEXT_FROM_ELEMENT":
-  //         output = await ExtractTextFromElement.execute(resolvedInputs);
-  //         break;
-  //       default:
-  //         throw new Error(`Unknown phase type: ${phase.type}`);
-  //     }
-
-  //     phase.outputs = output;
-  //   }
-
-  //   for (const [phaseId, phase] of Object.entries(environment.phases)) {
-  //     if (phase.type === "LAUNCH_BROWSER") phase.outputs = "Browser";
-  //   }
-
-  //   return environment;
-  // }
-
   static async run(environment: Environment): Promise<Environment> {
-    console.log("hi there");
+    console.log("environment : ", environment);
     for (const [phaseId, phase] of Object.entries(environment.phases)) {
       try {
         const resolvedInputs: Record<string, any> = {};
@@ -72,6 +42,12 @@ export class PhaseExecutor {
           case "EXTRACT_TEXT_FROM_ELEMENT":
             output = await ExtractTextFromElement.execute(resolvedInputs);
             break;
+          case "FILL_INPUT":
+            output = await FillInput.execute(resolvedInputs);
+            break;
+          case "CLICK_ELEMENT":
+            output = await ClickElement.execute(resolvedInputs);
+            break;
           default:
             throw new Error(`Unknown phase type: ${phase.type}`);
         }
@@ -92,10 +68,18 @@ export class PhaseExecutor {
       }
     }
 
-    for (const [phaseId, phase] of Object.entries(environment.phases)) {
-      if (phase.type === "LAUNCH_BROWSER") phase.outputs = "Browser";
+    const resultEnv: Environment = JSON.parse(JSON.stringify(environment));
+
+    for (const [phaseId, phase] of Object.entries(resultEnv.phases)) {
+      if (
+        phase.type === "LAUNCH_BROWSER" ||
+        phase.type === "FILL_INPUT" ||
+        phase.type === "CLICK_ELEMENT"
+      ) {
+        phase.outputs = "Browser Page";
+      }
     }
 
-    return environment;
+    return resultEnv;
   }
 }

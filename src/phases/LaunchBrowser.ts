@@ -16,7 +16,7 @@ export class LaunchBrowser {
     const url = inputUrl.startsWith("https://")
       ? inputUrl
       : "https://" + inputUrl;
-    const browser: Browser = await puppeteer.launch({ headless: true });
+    const browser: Browser = await puppeteer.launch({ headless: false });
     const page: Page = await browser.newPage();
     try {
       await page.goto(url, { waitUntil: "networkidle2" });

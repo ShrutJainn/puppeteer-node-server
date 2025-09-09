@@ -4,6 +4,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import redisClient from "./redisClient";
 import { PhaseExecutor } from "./runner/PhaseExecutor";
+import { Environment } from "./types/Environment";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -17,6 +18,7 @@ app.post(
     const { workflowId } = req.params;
     try {
       const environment = await redisClient.get(`env:${workflowId}`);
+
       if (!environment) {
         return res.status(404).json({
           success: false,
@@ -24,7 +26,7 @@ app.post(
         });
       }
 
-      let parsedEnv: any;
+      let parsedEnv: Environment;
       try {
         parsedEnv = JSON.parse(JSON.parse(environment));
       } catch (err) {
@@ -33,12 +35,12 @@ app.post(
           error: "Invalid JSON in environment",
         });
       }
-
       const result = await PhaseExecutor.run(parsedEnv);
       await redisClient.set(
         `env:${workflowId}`,
         JSON.stringify(JSON.stringify(result))
       );
+      console.log("result : ", result);
 
       return res.status(200).json({
         success: true,
