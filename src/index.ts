@@ -35,6 +35,7 @@ app.post(
           error: "Invalid JSON in environment",
         });
       }
+      console.dir(parsedEnv, { depth: null });
       const result = await PhaseExecutor.run(parsedEnv);
       await redisClient.set(
         `env:${workflowId}`,

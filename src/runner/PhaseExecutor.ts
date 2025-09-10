@@ -4,12 +4,9 @@ import { ExtractTextFromElement } from "../phases/ExtractTextFromElement";
 import { Environment } from "../types/Environment";
 import { FillInput } from "../phases/FillInput";
 import { ClickElement } from "../phases/ClickElement";
+import { DeliverViaWebhook } from "../phases/DeliverViaWebhook";
 
 export class PhaseExecutor {
-  // private static async resolveRef(env: Environment, ref: string) {
-  //   const refId = ref.replace("$ref:", "");
-  //   return env.phases[refId]?.outputs;
-  // }
   private static async resolveRef(env: Environment, ref: string) {
     const refId = ref.replace("$ref:", "");
     const output = env.phases[refId]?.outputs;
@@ -47,6 +44,9 @@ export class PhaseExecutor {
             break;
           case "CLICK_ELEMENT":
             output = await ClickElement.execute(resolvedInputs);
+            break;
+          case "DELIVER_VIA_WEBHOOK":
+            output = await DeliverViaWebhook.execute(resolvedInputs);
             break;
           default:
             throw new Error(`Unknown phase type: ${phase.type}`);

@@ -5,9 +5,10 @@ export class ClickElement {
     const page: Page = inputs["Web page"];
     const selector: string = inputs["Selector"];
 
-    await page.waitForSelector(selector);
-
-    await page.click(selector);
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "networkidle0" }),
+      page.click(selector),
+    ]);
 
     return page;
   }
