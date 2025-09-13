@@ -5,6 +5,8 @@ import { Environment } from "../types/Environment";
 import { FillInput } from "../phases/FillInput";
 import { ClickElement } from "../phases/ClickElement";
 import { DeliverViaWebhook } from "../phases/DeliverViaWebhook";
+import { ExtractDataWithAI } from "../phases/ExtractDataWithAI";
+import { ReadPropertyFromJson } from "../phases/ReadPropertyFromJson";
 
 export class PhaseExecutor {
   private static async resolveRef(env: Environment, ref: string) {
@@ -47,6 +49,12 @@ export class PhaseExecutor {
             break;
           case "DELIVER_VIA_WEBHOOK":
             output = await DeliverViaWebhook.execute(resolvedInputs);
+            break;
+          case "EXTRACT_DATA_WITH_AI":
+            output = await ExtractDataWithAI.execute(resolvedInputs);
+            break;
+          case "READ_PROPERTY_FROM_JSON":
+            output = await ReadPropertyFromJson.execute(resolvedInputs);
             break;
           default:
             throw new Error(`Unknown phase type: ${phase.type}`);
